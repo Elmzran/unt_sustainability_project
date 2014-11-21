@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 		if (strstr(str, "Yahoo!") == NULL)
 			/* If the string doesn't contain "Yahoo!", then print it out in the new file */
 			fprintf(fnew, "%s\n", str);
+		getc(fold);
 	}
 
 	/* Close both files */
