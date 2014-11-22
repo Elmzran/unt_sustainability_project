@@ -46,8 +46,12 @@ int main(int argc, char *argv[])
 		/* Checks if string contains "Yahoo!" */
 		if (strstr(str_init, "Yahoo!") == NULL)
 			/* If the string doesn't contain "Yahoo!", then print it out in the new file */
-			fprintf(fnew, "%s\n", str_init);
+			if (feof(fold) == 0)
+				fprintf(fnew, "%s\n", str_init);
+		/* Advance to the next line */
 		getc(fold);
+		/* Empty the string */
+		str_init[0] = '\0';
 	}
 
 	/* Close the files from the stripping */
