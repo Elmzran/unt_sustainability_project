@@ -27,15 +27,38 @@ void	find_misc(FILE *fp, char str[][MAX_SIZE], int num, char data[]);
 int main(int argc, char *argv[])
 {
 	FILE	*fold, *fnew;
-	char	str[16][MAX_SIZE], strtemp[MAX_SIZE];
+	char	str_init[512], str[16][MAX_SIZE], strtemp[MAX_SIZE];
 	int	i, j;
+
+	/* This first section is the consolidation of strip.c into format.c
+	The following chunk of code will strip out all of the tabs and the
+	[ Yahoo! Maps ] text block. */
+
+	/* Open the files for stripping */
+	fold = fopen(argv[1], "r");
+	fnew = fopen("temp.txt", "w");
+
+	/* Scan through the file */
+	while (feof(fold) == 0)
+	{
+		/* Read in the current line */
+		fscanf(fold, "%[^\n\t]s", str_init);
+		/* Checks if string contains "Yahoo!" */
+		if (strstr(str_init, "Yahoo!") == NULL)
+			/* If the string doesn't contain "Yahoo!", then print it out in the new file */
+			fprintf(fnew, "%s\n", str_init);
+		getc(fold);
+	}
+
+	/* Close the files from the stripping */
+	fclose(fold), fclose(fnew);
 
 	/* Zeros out the string array */
 	for (i = 0; i < 16; ++i)
 		str[i][0] = '\0';
 
-	/* Open up the files */
-	fold = fopen(argv[1], "r");
+	/* Open up the files for formatting */
+	fold = fopen("temp.txt", "r");
 	fnew = fopen(argv[2], "w");
 
 	/* Loop through the file until the end */
