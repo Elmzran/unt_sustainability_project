@@ -30,6 +30,10 @@ int main(int argc, char *argv[])
 	char	str[16][MAX_SIZE], strtemp[MAX_SIZE];
 	int	i, j;
 
+	/* Zeros out the string array */
+	for (i = 0; i < 16; ++i)
+		str[i][0] = '\0';
+
 	/* Open up the files */
 	fold = fopen(argv[1], "r");
 	fnew = fopen(argv[2], "w");
@@ -38,31 +42,36 @@ int main(int argc, char *argv[])
 	while (feof(fold) == 0)
 	{
 		/* Load in all data for one business */
-		for (i = 0; strstr(str[i - 1], "# OF") == NULL; ++i)
+		for (i = 0; strstr(str[i - 1], "# OF") == NULL && feof(fold) == 0; ++i)
 		{
 			/* Scan in the data to the current string */
 			fscanf(fold, "%[^\n]s", str[i]);
 			/* Skip the newline */
 			getc(fold);
 		}
-		
+
 		/* Iterate through all functions for proper formatting of data,
-		so it can be imported into excel */
-		find_company(fnew, str, i);
-		find_address(fnew, str, i);
-		find_city_state_zip(fnew, str, i);
-		find_county(fnew, str, i);
-		find_website(fnew, str, i);
-		find_misc(fnew, str, i, "PHONE: ");
-		find_misc(fnew, str, i, "FAX: ");
-		find_misc(fnew, str, i, "CONTACT: ");
-		find_misc(fnew, str, i, "DESCRIPTION: ");
-		find_misc(fnew, str, i, "NAICS: ");
-		find_misc(fnew, str, i, "SALES: ");
-		find_misc(fnew, str, i, "# OF EMPLOYEES: ");
+		so it can be imported into excel, check for end of file to prevent
+		segfault */
+		if (feof(fold) == 0)
+		{
+			find_company(fnew, str, i);
+			find_address(fnew, str, i);
+			find_city_state_zip(fnew, str, i);
+			find_county(fnew, str, i);
+			find_website(fnew, str, i);
+			find_misc(fnew, str, i, "PHONE: ");
+			find_misc(fnew, str, i, "FAX: ");
+			find_misc(fnew, str, i, "CONTACT: ");
+			find_misc(fnew, str, i, "DESCRIPTION: ");
+			find_misc(fnew, str, i, "NAICS: ");
+			find_misc(fnew, str, i, "SALES: ");
+			find_misc(fnew, str, i, "# OF EMPLOYEES: ");
+		}
 
 		/* Print a row delineator */
-		fprintf(fnew, "~\n");
+		if (feof(fold) == 0)
+			fprintf(fnew, "~\n");
 	}
 
 	/* Close the files */
