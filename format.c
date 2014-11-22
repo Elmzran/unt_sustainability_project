@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 
 		/* Print a row delineator */
 		if (feof(fold) == 0)
-			fprintf(fnew, "~\n");
+			fprintf(fnew, "\n");
 	}
 
 	/* Close the files */
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 void find_company(FILE *fp, char str[][MAX_SIZE], int num)
 {
 	/* Print out the first data string, since it's always the company name */
-	fprintf(fp, "%s%c\n", str[0], DELIN);
+	fprintf(fp, "%s%c", str[0], DELIN);
 
 	/* Empty the string */
 	str[0][0] = '\0';
@@ -104,13 +104,13 @@ void find_address(FILE *fp, char str[][MAX_SIZE], int num)
 		/* Checks for the presence of TX */
 		if (strstr(str[i], " TX") == NULL)
 		{
-			fprintf(fp, "%s%c\n", str[i], DELIN);
+			fprintf(fp, "%s%c", str[i], DELIN);
 			str[i][0] = '\0';
 			break;
 		}
 		else
 		{
-			fprintf(fp, "%c\n", DELIN);
+			fprintf(fp, "%c", DELIN);
 			break;
 		}
 	}
@@ -129,14 +129,14 @@ void find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num)
 		/* Checks for the presence of TX */
 		if (strstr(str[i], " TX") != NULL)
 		{
-			fprintf(fp, "%s%c\n", str[i], DELIN);
+			fprintf(fp, "%s%c", str[i], DELIN);
 			str[i][0] = '\0';
 			return;
 		}
 	}
 
 	/* If a city, state, and zip aren't found, print the delin */
-	fprintf(fp, "%c\n", DELIN);
+	fprintf(fp, "%c", DELIN);
 	return;
 }
 
@@ -157,14 +157,14 @@ void find_county(FILE *fp, char str[][MAX_SIZE], int num)
 				str[i][j - 1] = '\0';
 
 				/* Print out the data into the file */
-				fprintf(fp, "%s%c\n", str[i], DELIN);
+				fprintf(fp, "%s%c", str[i], DELIN);
 				str[i][0] = '\0';
 				return;
 			}
 	}
 
 	/* If a county isn't found, print the delin */
-	fprintf(fp, "%c\n", DELIN);
+	fprintf(fp, "%c", DELIN);
 	return;
 }
 
@@ -178,13 +178,13 @@ void find_website(FILE *fp, char str[][MAX_SIZE], int num)
 		/* Checks for the presence of http:// */
 		if (strstr(str[i], "http://") != NULL)
 		{
-			fprintf(fp, "%s%c\n", str[i], DELIN);
+			fprintf(fp, "%s%c", str[i], DELIN);
 			str[i][0] = '\0';
 			return;
 		}
 
 	/* If a website ins't found, print the delin */
-	fprintf(fp, "%c\n", DELIN);
+	fprintf(fp, "%c", DELIN);
 	return;
 }
 
@@ -198,12 +198,12 @@ void find_misc(FILE *fp, char str[][MAX_SIZE], int num, char data[])
 		/* Checks for the presence of the string data[] */
 		if (strstr(str[i], data) != NULL)
 		{
-			fprintf(fp, "%s%c\n", str[i] + strlen(data), DELIN);
+			fprintf(fp, "%s%c", str[i] + strlen(data), DELIN);
 			str[i][0] = '\0';
 			return;
 		}
 
 	/* If data[] isn't found, print the delin */
-	fprintf(fp, "%c\n", DELIN);
+	fprintf(fp, "%c", DELIN);
 	return;
 }
