@@ -18,8 +18,8 @@ perfect importing into excel.
 /* Function prototypes for each data set */
 void	find_company(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_address(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_city_state_zip(FILE *fp, char *str[], int num);
-void	find_country(FILE *fp, char *str[], int num);
+void	find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_county(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_website(FILE *fp, char *str[], int num);
 void	find_phone(FILE *fp, char *str[], int num);
 void	find_tax(FILE *fp, char *str[], int num);
@@ -33,7 +33,7 @@ void	find_exmployees(FILE *fp, char *str[], int num);
 int main(int argc, char *argv[])
 {
 	FILE	*fold, *fnew;
-	char	str[16][MAX_SIZE];
+	char	str[16][MAX_SIZE], strtemp[MAX_SIZE];
 	int	i, j;
 
 	/* Open up the files */
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 		so it can be imported into excel */
 		find_company(fnew, str, i);
 		find_address(fnew, str, i);
+		find_city_state_zip(fnew, str, i);7
 
 		/* Zero out all of the data. Will cause segfault if a for loop is used */
 		str[0][0] = '\0';
@@ -69,6 +70,9 @@ int main(int argc, char *argv[])
 		str[8][0] = '\0';
 		str[9][0] = '\0';
 		str[10][0] = '\0';
+
+		/* Print a row delineator */
+		fprintf(fnew, "~\n");
 	}
 
 	/* Close the files */
@@ -84,16 +88,78 @@ void find_company(FILE *fp, char str[][MAX_SIZE], int num)
 	fprintf(fp, "%s%c\n", str[0], DELIN);
 
 	/* Empty the string */
-	str[0][0] = '\0';	
+	str[0][0] = '\0';
 
 	return;
 }
 
-/* Search for and print the address, will not contain any of the unique data of the other sets,
-and is never first */
+/* Search for and print the address, which occurs before city, state, zip, so if TX is found,
+then the business has no address available */
 void find_address(FILE *fp, char str[][MAX_SIZE], int num)
 {
-	i = 0;
+	int i;
 
-	/**/
+	/* Iterate through each str, checking for a ton of different string presences */
+	for (i = 1; i < num; ++i)
+	{
+		/* Checks for the presence of TX */
+		if (strstr(str[i], " TX") == NULL)
+		{
+			fprintf(fp, "%s%c\n", str[i], DELIN);
+			str[i][0] = '\0';
+			break;
+		}
+		else
+		{
+			fprintf(fp, "%c\n", DELIN);
+			break;
+		}
+	}
+
+	return;
+}
+
+/* Search for and print the city, state, and zip */
+void find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num)
+{
+	int i;
+
+	/* Iterate through each string, looking for TX */
+	for (i = 1; i < num; ++i)
+	{
+		/* Checks for the presence of TX */
+		if (strstr(str[i], " TX") != NULL)
+		{
+			fprintf(fp, "%s%c\n", str[i], DELIN);
+			str[i][0] = '\0';
+			return;
+		}
+	}
+
+	/* If a city, state, and zip aren't found, print the delin */
+	fprintf(fp, "%c\n", DELIN);
+	return;
+}
+
+/* Search for and print the county */
+void find_county(FILE *fp, char str[][MAX_SIZE], int num)
+{
+	int i;
+
+	/* Iterate through each string, looking for the lack of certain substrings */
+	for (i = 1; i < num; ++i)
+	{
+		/* Checks for the presence of county and lack of other substrings */
+		if (strstr(str[i], " County") != NULL)
+			if (strstr(str[i], "DESCRIPTION") == NULL && strstr(str[i], " TX") == NULL)
+			{
+				fprintf(fp, "%s%c\n", str[i], DELIN);
+				str[i][0] = '\0';
+				return;
+			}
+	}
+
+	/* If a county isn't found, print the delin */
+	fprintf(fp, "%c\n", DELIN);
+	return;
 }
