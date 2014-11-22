@@ -21,13 +21,7 @@ void	find_address(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_county(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_website(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_phone(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_fax(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_contact(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_description(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_naics(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_sales(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_exmployees(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_misc(FILE *fp, char str[][MAX_SIZE], int num, char data[]);
 
 /* Begin execution */
 int main(int argc, char *argv[])
@@ -59,10 +53,13 @@ int main(int argc, char *argv[])
 		find_city_state_zip(fnew, str, i);
 		find_county(fnew, str, i);
 		find_website(fnew, str, i);
-		find_phone(fnew, str, i);
-		find_fax(fnew, str, i);
-		find_contact(fnew, str, i);
-		find_description(fnew, str, i);
+		find_misc(fnew, str, i, "PHONE: ");
+		find_misc(fnew, str, i, "FAX: ");
+		find_misc(fnew, str, i, "CONTACT: ");
+		find_misc(fnew, str, i, "DESCRIPTION: ");
+		find_misc(fnew, str, i, "NAICS: ");
+		find_misc(fnew, str, i, "SALES: ");
+		find_misc(fnew, str, i, "# OF EMPLOYEES: ");
 
 		/* Print a row delineator */
 		fprintf(fnew, "~\n");
@@ -92,7 +89,7 @@ void find_address(FILE *fp, char str[][MAX_SIZE], int num)
 {
 	int i;
 
-	/* Iterate through each str, checking for a ton of different string presences */
+	/* Iterate through each str */
 	for (i = 1; i < num; ++i)
 	{
 		/* Checks for the presence of TX */
@@ -182,82 +179,22 @@ void find_website(FILE *fp, char str[][MAX_SIZE], int num)
 	return;
 }
 
-/* Find the phone number, and print out only the number */
-void find_phone(FILE *fp, char str[][MAX_SIZE], int num)
+/* Find a misc data field */
+void find_misc(FILE *fp, char str[][MAX_SIZE], int num, char data[])
 {
 	int i;
 
-	/* Iterate through each string, looking for PHONE: */
+	/* Iterate through each string, looking for data[] */
 	for (i = 1; i < num; ++i)
-		/* Checks for the presence of PHONE: with the space */
-		if (strstr(str[i], "PHONE: ") != NULL)
+		/* Checks for the presence of the string data[] */
+		if (strstr(str[i], data) != NULL)
 		{
-			fprintf(fp, "%s%c\n", str[i] + 7, DELIN);
+			fprintf(fp, "%s%c\n", str[i] + strlen(data), DELIN);
 			str[i][0] = '\0';
 			return;
 		}
 
-	/* If a phone number isn't found, print the delin */
-	fprintf(fp, "%c\n", DELIN);
-	return;
-}
-
-/* Find the fax number, and print out only the number */
-void find_fax(FILE *fp, char str[][MAX_SIZE], int num)
-{
-	int i;
-
-	/* Iterate through each string looking for FAX: */
-	for (i = 1; i < num; ++i)
-		/* Checks for the presence of FAX: with the space */
-		if (strstr(str[i], "FAX: ") != NULL)
-		{
-			fprintf(fp, "%s%c\n", str[i] + 5, DELIN);
-			str[i][0] = '\0';
-			return;
-		}	
-
-	/* If a fax number isn't found, print the delin */
-	fprintf(fp, "%c\n", DELIN);
-	return;	
-}
-
-/* Find the contacts, and print it (them) out */
-void find_contact(FILE *fp, char str[][MAX_SIZE], int num)
-{
-	int i;
-
-	/* Iterate through each string looking for CONTACT: */
-	for (i = 1; i < num; ++i)
-		/* Checks for the presence of CONTACT: with the space */
-		if (strstr(str[i], "CONTACT: ") != NULL)
-		{
-			fprintf(fp, "%s%c\n", str[i] + 9, DELIN);
-			str[i][0] = '\0';
-			return;
-		}
-
-	/* If a contact isn't found, print the delin */
-	fprintf(fp, "%c\n", DELIN);
-	return;
-}
-
-/* Find the description, and print it out */
-void find_description(FILE *fp, char str[][MAX_SIZE], int num)
-{
-	int i;
-
-	/* Iterate through each string looking for DESCRIPTION: */
-	for (i = 1; i < num; ++i)
-		/* Checks for the presence of DESCRIPTION: with the space */
-		if (strstr(str[i], "DESCRIPTION: ") != NULL)
-		{
-			fprintf(fp, "%s%c\n", str[i] + 13, DELIN);
-			str[i][0] = '\0';
-			return;
-		}
-
-	/* If a description isn't found, print the delin */
+	/* If data[] isn't found, print the delin */
 	fprintf(fp, "%c\n", DELIN);
 	return;
 }
