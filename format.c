@@ -20,14 +20,14 @@ void	find_company(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_address(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_county(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_website(FILE *fp, char *str[], int num);
-void	find_phone(FILE *fp, char *str[], int num);
-void	find_tax(FILE *fp, char *str[], int num);
-void	finx_contact(FILE *fp, char *str[], int num);
-void	find_description(FILE *fp, char *str[], int num);
-void	find_naics(FILE *fp, char *str[], int num);
-void	find_sales(FILE *fp, char *str[], int num);
-void	find_exmployees(FILE *fp, char *str[], int num);
+void	find_website(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_phone(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_tax(FILE *fp, char str[][MAX_SIZE], int num);
+void	finx_contact(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_description(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_naics(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_sales(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_exmployees(FILE *fp, char str[][MAX_SIZE], int num);
 
 /* Begin execution */
 int main(int argc, char *argv[])
@@ -56,7 +56,10 @@ int main(int argc, char *argv[])
 		so it can be imported into excel */
 		find_company(fnew, str, i);
 		find_address(fnew, str, i);
-		find_city_state_zip(fnew, str, i);7
+		find_city_state_zip(fnew, str, i);
+		find_county(fnew, str, i);
+		find_website(fnew, str, i);
+		find_phone(fnew, str, i);
 
 		/* Zero out all of the data. Will cause segfault if a for loop is used */
 		str[0][0] = '\0';
@@ -144,7 +147,7 @@ void find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num)
 /* Search for and print the county */
 void find_county(FILE *fp, char str[][MAX_SIZE], int num)
 {
-	int i;
+	int i, j;
 
 	/* Iterate through each string, looking for the lack of certain substrings */
 	for (i = 1; i < num; ++i)
@@ -153,6 +156,11 @@ void find_county(FILE *fp, char str[][MAX_SIZE], int num)
 		if (strstr(str[i], " County") != NULL)
 			if (strstr(str[i], "DESCRIPTION") == NULL && strstr(str[i], " TX") == NULL)
 			{
+				/* Remove the extra space at the end of county lines */
+				for (j = 0; str[i][j] != '\0'; ++j);
+				str[i][j - 1] = '\0';
+
+				/* Print out the data into the file */
 				fprintf(fp, "%s%c\n", str[i], DELIN);
 				str[i][0] = '\0';
 				return;
@@ -160,6 +168,48 @@ void find_county(FILE *fp, char str[][MAX_SIZE], int num)
 	}
 
 	/* If a county isn't found, print the delin */
+	fprintf(fp, "%c\n", DELIN);
+	return;
+}
+
+/* Search for and print the website */
+void find_website(FILE *fp, char str[][MAX_SIZE], int num)
+{
+	int i;
+
+	/* Iterate through each string, looking for http:// */
+	for (i = 1; i < num; ++i)
+		/* Checks for the presence of http:// */
+		if (strstr(str[i], "http://") != NULL)
+		{
+			fprintf(fp, "%s%c\n", str[i], DELIN);
+			str[i][0] = '\0';
+			return;
+		}
+
+	/* If a website ins't found, print the delin */
+	fprintf(fp, "%c\n", DELIN);
+	return;
+}
+
+/* Find the phone number, and print out only the number */
+void find_phone(FILE *fp, char str[][MAX_SIZE], int num)
+{
+	int i;
+
+	/* Iterate through each string, looking for PHONE: */
+	for (i = 1; i < num; ++i)
+	{
+		/* Checks for the presence of PHONE: with the space */
+		if (strstr(str[i], "PHONE: ") != NULL)
+		{
+			fprintf(fp, "%s%c\n", str[i] + 7, DELIN);
+			str[i][0] = '\0';
+			return;
+		}
+	}
+
+	/* If a phone number isn't found, print the delin */
 	fprintf(fp, "%c\n", DELIN);
 	return;
 }
