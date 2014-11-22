@@ -23,7 +23,7 @@ void	find_county(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_website(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_phone(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_fax(FILE *fp, char str[][MAX_SIZE], int num);
-void	finx_contact(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_contact(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_description(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_naics(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_sales(FILE *fp, char str[][MAX_SIZE], int num);
@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
 		find_website(fnew, str, i);
 		find_phone(fnew, str, i);
 		find_fax(fnew, str, i);
+		find_contact(fnew, str, i);
+		find_description(fnew, str, i);
 
 		/* Print a row delineator */
 		fprintf(fnew, "~\n");
@@ -218,4 +220,44 @@ void find_fax(FILE *fp, char str[][MAX_SIZE], int num)
 	/* If a fax number isn't found, print the delin */
 	fprintf(fp, "%c\n", DELIN);
 	return;	
+}
+
+/* Find the contacts, and print it (them) out */
+void find_contact(FILE *fp, char str[][MAX_SIZE], int num)
+{
+	int i;
+
+	/* Iterate through each string looking for CONTACT: */
+	for (i = 1; i < num; ++i)
+		/* Checks for the presence of CONTACT: with the space */
+		if (strstr(str[i], "CONTACT: ") != NULL)
+		{
+			fprintf(fp, "%s%c\n", str[i] + 9, DELIN);
+			str[i][0] = '\0';
+			return;
+		}
+
+	/* If a contact isn't found, print the delin */
+	fprintf(fp, "%c\n", DELIN);
+	return;
+}
+
+/* Find the description, and print it out */
+void find_description(FILE *fp, char str[][MAX_SIZE], int num)
+{
+	int i;
+
+	/* Iterate through each string looking for DESCRIPTION: */
+	for (i = 1; i < num; ++i)
+		/* Checks for the presence of DESCRIPTION: with the space */
+		if (strstr(str[i], "DESCRIPTION: ") != NULL)
+		{
+			fprintf(fp, "%s%c\n", str[i] + 13, DELIN);
+			str[i][0] = '\0';
+			return;
+		}
+
+	/* If a description isn't found, print the delin */
+	fprintf(fp, "%c\n", DELIN);
+	return;
 }
