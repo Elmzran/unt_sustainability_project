@@ -22,7 +22,7 @@ void	find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_county(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_website(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_phone(FILE *fp, char str[][MAX_SIZE], int num);
-void	find_tax(FILE *fp, char str[][MAX_SIZE], int num);
+void	find_fax(FILE *fp, char str[][MAX_SIZE], int num);
 void	finx_contact(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_description(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_naics(FILE *fp, char str[][MAX_SIZE], int num);
@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
 		find_county(fnew, str, i);
 		find_website(fnew, str, i);
 		find_phone(fnew, str, i);
+		find_fax(fnew, str, i);
 
 		/* Zero out all of the data. Will cause segfault if a for loop is used */
 		str[0][0] = '\0';
@@ -199,7 +200,6 @@ void find_phone(FILE *fp, char str[][MAX_SIZE], int num)
 
 	/* Iterate through each string, looking for PHONE: */
 	for (i = 1; i < num; ++i)
-	{
 		/* Checks for the presence of PHONE: with the space */
 		if (strstr(str[i], "PHONE: ") != NULL)
 		{
@@ -207,9 +207,28 @@ void find_phone(FILE *fp, char str[][MAX_SIZE], int num)
 			str[i][0] = '\0';
 			return;
 		}
-	}
 
 	/* If a phone number isn't found, print the delin */
 	fprintf(fp, "%c\n", DELIN);
 	return;
+}
+
+/* Find the fax number, and print out only the number */
+void find_fax(FILE *fp, char str[][MAX_SIZE], int num)
+{
+	int i;
+
+	/* Iterate through each string looking for FAX: */
+	for (i = 1; i < num; ++i)
+		/* Checks for the presence of FAX: with the space */
+		if (strstr(str[i], "FAX: ") != NULL)
+		{
+			fprintf(fp, "%s%c\n", str[i] + 5, DELIN);
+			str[i][0] = '\0';
+			return;
+		}	
+
+	/* If a fax number isn't found, print the delin */
+	fprintf(fp, "%c\n", DELIN);
+	return;	
 }
