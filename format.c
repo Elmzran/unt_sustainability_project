@@ -62,19 +62,6 @@ int main(int argc, char *argv[])
 		find_phone(fnew, str, i);
 		find_fax(fnew, str, i);
 
-		/* Zero out all of the data. Will cause segfault if a for loop is used */
-		str[0][0] = '\0';
-		str[1][0] = '\0';
-		str[2][0] = '\0';
-		str[3][0] = '\0';
-		str[4][0] = '\0';
-		str[5][0] = '\0';
-		str[6][0] = '\0';
-		str[7][0] = '\0';
-		str[8][0] = '\0';
-		str[9][0] = '\0';
-		str[10][0] = '\0';
-
 		/* Print a row delineator */
 		fprintf(fnew, "~\n");
 	}
