@@ -123,7 +123,9 @@ void find_company(FILE *fp, char str[][MAX_SIZE], int num)
 then the business has no address available */
 void find_address(FILE *fp, char str[][MAX_SIZE], int num)
 {
+	/* IDENTIFIERS */
 	int i;
+	char city[MAX_SIZE], state[MAX_SIZE], zip[MAX_SIZE];
 
 	/* Iterate through each str */
 	for (i = 1; i < num; ++i)
@@ -131,12 +133,20 @@ void find_address(FILE *fp, char str[][MAX_SIZE], int num)
 		/* Checks for the presence of TX */
 		if (strstr(str[i], " TX") == NULL)
 		{
-			fprintf(fp, "%s%c", str[i], DELIN);
+			/* Scan in city, state, and the first five digits of the zip from CITY, STATE, ZIP string */
+			sscanf(str[i], "%s %s %5s", city, state, zip);
+			/* Print city, state, and zip, with DELIN so each has their own column */
+			fprintf(fp, "%s%c", city, DELIN);
+			fprintf(fp, "%s%c", state, DELIN);
+			fprintf(fp, "%s%c", zip, DELIN);
 			str[i][0] = '\0';
 			break;
 		}
 		else
 		{
+			/* Print one DELIN for the lack of city, state, and zip */
+			fprintf(fp, "%c", DELIN);
+			fprintf(fp, "%c", DELIN);
 			fprintf(fp, "%c", DELIN);
 			break;
 		}
