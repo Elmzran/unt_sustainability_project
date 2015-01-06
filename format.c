@@ -253,7 +253,7 @@ void find_misc(FILE *fp, char str[][MAX_SIZE], int num, char data[])
 /* Find all NAICS, split them into separate columns, and remove duplicates */
 void find_naics(FILE *fp, char str[][MAX_SIZE], int num, char data[])
 {
-	int i, j, k, n[4] = {-1, -1, -1, -1};
+	int i, j, k, n[4] = {-1, -1, -1, -1}, tmp;
 
 	/* Iterate through each string, looking for data[] */
 	for (i = 1; i < num; ++i)
@@ -285,7 +285,10 @@ void find_naics(FILE *fp, char str[][MAX_SIZE], int num, char data[])
 			for (j = 0; j < 3; ++j)
 				for (k = 0; k < 3; ++k)
 					if (n[k] == -1 && n[k + 1] != -1)
+					{
 						n[k + 1] = n[k];
+						n[k] = -1;
+					}
 
 			/* Print the NAICS to the file*/
 			for (j = 0; j < 4; ++j)
@@ -299,6 +302,9 @@ void find_naics(FILE *fp, char str[][MAX_SIZE], int num, char data[])
 		}
 
 	/* If data[] isn't found, print the delin */
+	fprintf(fp, "%c", DELIN);
+	fprintf(fp, "%c", DELIN);
+	fprintf(fp, "%c", DELIN);
 	fprintf(fp, "%c", DELIN);
 	return;
 }
