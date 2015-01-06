@@ -22,6 +22,7 @@ void	find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_county(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_website(FILE *fp, char str[][MAX_SIZE], int num);
 void	find_misc(FILE *fp, char str[][MAX_SIZE], int num, char data[]);
+void	find_naics(FILE *fp, char str[][MAX_SIZE], int num, char data[]);
 
 /* Begin execution */
 int main(int argc, char *argv[])
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
 			find_misc(fnew, str, i, "FAX: ");
 			find_misc(fnew, str, i, "CONTACT: ");
 			find_misc(fnew, str, i, "DESCRIPTION: ");
-			find_misc(fnew, str, i, "NAICS: ");
+			find_naics(fnew, str, i, "NAICS: ");
 			find_misc(fnew, str, i, "SALES: ");
 			find_misc(fnew, str, i, "# OF EMPLOYEES: ");
 		}
@@ -240,6 +241,59 @@ void find_misc(FILE *fp, char str[][MAX_SIZE], int num, char data[])
 		if (strstr(str[i], data) != NULL)
 		{
 			fprintf(fp, "%s%c", str[i] + strlen(data), DELIN);
+			str[i][0] = '\0';
+			return;
+		}
+
+	/* If data[] isn't found, print the delin */
+	fprintf(fp, "%c", DELIN);
+	return;
+}
+
+/* Find all NAICS, split them into separate columns, and remove duplicates */
+void find_naics(FILE *fp, char str[][MAX_SIZE], int num, char data[])
+{
+	int i, j, k, n[4] = {-1, -1, -1, -1};
+
+	/* Iterate through each string, looking for data[] */
+	for (i = 1; i < num; ++i)
+		/* Checks for the presence of the string data[] */
+		if (strstr(str[i], data) != NULL)
+		{
+			/* Shift NAICS numbers to string front so beginning characters are eliminated*/
+			for (j = 0; j < strlen(str[i]); ++j)
+				str[i][j] = str[i][j + strlen(data)];
+
+			/* Eliminate commas from NAICS string */
+			for (j = 0; j < strlen(str[i]); ++j)
+				if (str[i][j] == ',')
+					str[i][j] = ' ';
+
+			/* Parse NAICS string numbers into separate NAICS integer variables */
+			sscanf(str[i], "%4d %4d %4d %4d", &n[0], &n[1], &n[2], &n[3]);
+
+			/* Remove duplicate NAICS, starting with the 4th NAICS */
+			for (j = 3; j > 0; --j)
+				for (k = j - 1; k >= 0; --k)
+					if (n[j] == n[k])
+					{
+						n[j] = -1;
+						break;
+					}
+
+			/* Shift NAICS over to fill empty 'columns' */
+			for (j = 0; j < 3; ++j)
+				for (k = 0; k < 3; ++k)
+					if (n[k] == -1 && n[k + 1] != -1)
+						n[k + 1] = n[k];
+
+			/* Print the NAICS to the file*/
+			for (j = 0; j < 4; ++j)
+				if (n[j] != -1)
+					fprintf(fp, "%d%c", n[j], DELIN);
+				else
+					fprintf(fp, "%c", DELIN);
+
 			str[i][0] = '\0';
 			return;
 		}
