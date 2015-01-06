@@ -160,7 +160,11 @@ void find_city_state_zip(FILE *fp, char str[][MAX_SIZE], int num)
 		if (strstr(str[i], " TX") != NULL)
 		{
 			/* Scan in city, state, and the first five digits of the zip from CITY, STATE, ZIP string */
-			sscanf(str[i], "%s %s %5s", city, state, zip);
+			sscanf(str[i], "%[^,] %[^0123456789] %5s", city, state, zip);
+			/* Shifts state string forward 1 to eliminate comma, and removes last whitespace */
+			state[0] = state[2];
+			state[1] = state[3];
+			state[2] = '\0';
 			/* Print city, state, and zip, with DELIN so each has their own column */
 			fprintf(fp, "%s%c", city, DELIN);
 			fprintf(fp, "%s%c", state, DELIN);
